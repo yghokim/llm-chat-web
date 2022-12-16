@@ -2,15 +2,18 @@ from time import perf_counter
 from re import compile
 from os import path, getcwd
 
-from fastapi import FastAPI, Request
+import dotenv
+from fastapi import FastAPI, Request, Path
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import HTMLResponse, FileResponse
 from starlette.staticfiles import StaticFiles
 
 from dotenv import load_dotenv
 
-load_dotenv()
+from chatbot.generator import DialogTurn
+from chatbot.generators.gpt3_generator import GPT3StaticPromptResponseGenerator
 
+print("Load env:", load_dotenv(path.join(getcwd(), ".env")))
 
 app = FastAPI()
 
@@ -53,6 +56,14 @@ app.add_middleware(
     allow_headers=["*"],
     expose_headers=["X-processing-time", "X-request-id", "X-context-id"]
 )
+
+@app.get("/chat/{message}")
+async def chat(message: str = Path(...)):
+    gen = GPT3StaticPromptResponseGenerator.from_yml("assets/gpt3-chatbots/diet-001.yml")
+    response, elapsed = await gen.get_response([DialogTurn(message, True)])
+
+    return {"response": response, "elapsed": elapsed }
+
 
 
 @app.middleware("http")
