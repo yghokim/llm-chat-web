@@ -42,9 +42,15 @@ export const ChatbotPlayground = () => {
         retryOnError: true
     })
 
-    return <div>
-        <ChatPanel dialog={dialog} isProcessing={isProcessing} onUserNewMessage={(message) => {
+    const onUserNewMessage = useCallback((message: string) => {
             sendJsonMessage({action: ClientWebSocketAction.InsertUserMessage, data: message})
-        }}/>
+        }, [sendJsonMessage])
+
+    return <div className="container mx-auto bg-white rounded-xl flex flex-row">
+        <div className={"flex-1 bg-slate-50 border-r-[1px] rounded-l-xl"}></div>
+        <ChatPanel dialog={dialog} isProcessing={isProcessing}
+                   className={"flex-1"}
+                   inputContainerClassName={"rounded-br-xl"}
+                   onUserNewMessage={onUserNewMessage}/>
     </div>
 }

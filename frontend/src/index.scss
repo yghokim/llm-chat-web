@@ -3,7 +3,6 @@
 @tailwind utilities;
 
 body {
-  background: darkgray;
   padding: 0;
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -19,6 +18,10 @@ code {
     monospace;
 }
 
+.background-panel{
+  background: rgb(56,25,87);
+  background: linear-gradient(121deg, rgba(56,25,87,1) 0%, rgba(168,78,125,1) 100%);
+}
 
 @layer components {
 
@@ -57,20 +60,22 @@ code {
   .turn-container{
     @apply px-2 py-1 flex flex-col;
     .callout{
-      @apply rounded-xl px-3 py-1 shadow-md max-w-xs text-gray-600;
+      @apply rounded-xl px-3 py-1 shadow-md max-w-xs text-gray-600 font-medium;
     }
 
     &.system{
       @apply items-start;
       .callout{
-        @apply bg-slate-100/80 rounded-tl-none text-sm;
+        @apply rounded-tl-none text-white text-sm;
+        background: rgb(79,164,164);
+        background: linear-gradient(90deg, rgb(156, 100, 185) 0%, #7352b6 100%);
       }
     }
 
     &.user{
       @apply items-end;
       .callout {
-        @apply bg-white rounded-tr-none text-sm;
+        @apply bg-white rounded-tr-none text-sm border-[1px];
       }
     }
   }

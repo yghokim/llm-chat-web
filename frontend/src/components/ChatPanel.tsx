@@ -4,6 +4,7 @@ import {useDebounceCallback} from "@react-hook/debounce";
 
 export const ChatPanel = (props: {
     className?: string,
+    inputContainerClassName?: string,
     dialog: Array<DialogTurn>,
     isProcessing: boolean,
     onUserNewMessage: (message: string) => void
@@ -43,7 +44,7 @@ export const ChatPanel = (props: {
         }
     }, [onSendButtonClick])
 
-    return <div className={props.className}>
+    return <div className={`flex flex-col h-[400px] ${props.className}`}>
         <div ref={scrollViewRef} className="flex-1 overflow-y-auto py-3">
                     {
                         props.dialog.map((turn, i) => {
@@ -60,9 +61,9 @@ export const ChatPanel = (props: {
                         </span>
                     }
                 </div>
-                <div className="flex p-2 bg-slate-300/50">
+                <div className={`flex p-2 bg-slate-300/50 ${props.inputContainerClassName}`}>
                     <input className="text-input sm mr-1 flex-1" onKeyDown={onKeyDown} ref={inputRef} autoFocus={true}
-                        type={"text"} onChange={onInputChange} value={currentInput}/>
+                        type={"text"} onChange={onInputChange} value={currentInput} placeholder={"Insert message and tap enter"}/>
                     <button className="button-primary" disabled={props.isProcessing} onClick={onSendButtonClick}>Send</button>
                 </div>
     </div>
