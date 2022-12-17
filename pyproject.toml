@@ -12,6 +12,7 @@ uvicorn = {extras = ["standard"], version = "^0.20.0"}
 openai = "^0.25.0"
 python-dotenv = "^0.21.0"
 pyyaml = "^6.0"
+reactivex = "^4.0.4"
 
 [tool.poetry.dev-dependencies]
 

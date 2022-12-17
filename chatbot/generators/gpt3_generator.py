@@ -6,7 +6,9 @@ import yaml
 
 import openai
 
-from chatbot.generator import ResponseGenerator, DialogTurn
+from chatbot.chatbot import ResponseGenerator, DialogTurn, RegenerateRequestException
+
+
 class GPT3StaticPromptResponseGenerator(ResponseGenerator):
 
     @classmethod
@@ -87,6 +89,10 @@ class GPT3StaticPromptResponseGenerator(ResponseGenerator):
             top_choice = result.choices[0]
 
             if top_choice.finish_reason == 'stop':
-                return top_choice.text.strip()
+                response_text = top_choice.text.strip()
+                if len(response_text) > 0:
+                    return response_text
+                else:
+                    raise RegenerateRequestException("Empty text")
             else:
                 raise Exception("GPT3 error")

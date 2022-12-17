@@ -2,7 +2,6 @@ from time import perf_counter
 from re import compile
 from os import path, getcwd
 
-import dotenv
 from fastapi import FastAPI, Request, Path
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.responses import HTMLResponse, FileResponse
@@ -10,12 +9,15 @@ from starlette.staticfiles import StaticFiles
 
 from dotenv import load_dotenv
 
-from chatbot.generator import DialogTurn
+from chatbot.chatbot import DialogTurn
 from chatbot.generators.gpt3_generator import GPT3StaticPromptResponseGenerator
+from .routers import chat
 
 print("Load env:", load_dotenv(path.join(getcwd(), ".env")))
 
 app = FastAPI()
+
+app.include_router(chat.router, prefix="/api/v1/chat")
 
 ##########################################################
 
