@@ -22,3 +22,23 @@ export interface DialogTurn {
     is_user: boolean
     message: string
 }
+
+export interface SessionConfigBase{
+    type: "preset" | "custom"
+    model: string
+}
+
+export interface SessionPresetConfig extends SessionConfigBase{
+    type: "preset"
+    format: "specific"|"descriptive"
+    modifier: boolean
+    topic: "sleep" | "diet" | "work" | "exercise"
+}
+
+
+export interface SessionCustomConfig extends SessionConfigBase{
+    type: "custom",
+    prompt_body: string
+}
+
+export type SessionConfig = SessionPresetConfig | SessionCustomConfig

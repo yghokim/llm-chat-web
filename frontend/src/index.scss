@@ -41,12 +41,28 @@ code {
     }
   }
 
+  h3, .h3-style{
+    @apply font-bold text-sm;
+  }
+
+  h3{
+    @apply mb-2
+  }
+
+  hr{
+    @apply my-4;
+  }
+
   .button-secondary {
-    @apply bg-slate-600 disabled:bg-slate-400 hover:bg-slate-600/80 font-semibold text-white disabled:text-gray-200 text-sm pl-2 pr-2 pt-1 pb-1 rounded-md shadow-md
+    @apply bg-white disabled:bg-slate-400 hover:bg-orange-200/80 font-semibold disabled:text-gray-200 text-sm pl-2 pr-2 pt-1 pb-1 border-[1px] border-slate-200 rounded-lg shadow-sm;
+
+    &.selected{
+      @apply bg-pink-600/80 shadow-md text-white hover:bg-pink-500/70;
+    }
   }
 
   .button-primary {
-    @apply button-secondary bg-teal-500 text-base text-sm px-4 py-1.5 hover:bg-teal-400;
+    @apply button-secondary bg-white text-base text-sm px-4 py-1.5;
   }
 
   .text-input {
