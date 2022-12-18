@@ -54,7 +54,7 @@ code {
   }
 
   .button-secondary {
-    @apply bg-white disabled:bg-slate-400 hover:bg-orange-200/80 font-semibold disabled:text-gray-200 text-sm pl-2 pr-2 pt-1 pb-1 border-[1px] border-slate-200 rounded-lg shadow-sm;
+    @apply bg-white disabled:bg-slate-200 hover:bg-orange-200/80 font-semibold disabled:text-gray-400 text-sm pl-2 pr-2 pt-1 pb-1 border-[1px] border-slate-200 rounded-lg shadow-sm;
 
     &.selected{
       @apply bg-pink-600/80 shadow-md text-white hover:bg-pink-500/70;

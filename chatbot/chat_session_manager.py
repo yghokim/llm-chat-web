@@ -8,6 +8,7 @@ from chatbot.chatbot import ChatSession, DialogTurn
 class ChatEvent:
     NewMessage = "new-message"
     IsProcessing = "is-processing"
+    MountPromptTemplate = "mount-prompt-template"
 
 class ChatSessionManager:
     def __init__(self):

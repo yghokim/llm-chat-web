@@ -5,7 +5,8 @@ export enum ClientWebSocketAction {
 
 export enum WebSocketEvent {
     NewMessage = "new-message",
-    IsProcessing = "is-processing"
+    IsProcessing = "is-processing",
+    MountPromptTemplate = "mount-prompt-template"
 }
 
 export interface WebSocketEventArgs {
@@ -42,3 +43,12 @@ export interface SessionCustomConfig extends SessionConfigBase{
 }
 
 export type SessionConfig = SessionPresetConfig | SessionCustomConfig
+
+
+export const DEFAULT_PRESET_CONFIG: SessionPresetConfig = {
+    type: 'preset',
+    topic: 'sleep',
+    format: 'descriptive',
+    modifier: true,
+    model: 'text-davinci-003'
+}

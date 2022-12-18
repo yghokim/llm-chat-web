@@ -1,7 +1,8 @@
+import yaml
 from fastapi import APIRouter, Depends, HTTPException
 from starlette.websockets import WebSocket, WebSocketDisconnect
 
-from chatbot.chat_session_manager import chat_session_manager
+from chatbot.chat_session_manager import chat_session_manager, ChatEvent
 from chatbot.chatbot import ChatSession
 from chatbot.generators.gpt3_generator import GPT3StaticPromptResponseGenerator
 
@@ -10,9 +11,19 @@ class ClientWebSocketAction:
     InsertUserMessage = "insert-user-message"
     InitChatSession = "init-chat-session"
 
+def _get_gpt3_chatbot_config_path(session_config: dict):
+    if session_config["format"] == 'specific' and session_config["modifier"] is True:
+        index = 1
+    elif session_config["format"] == 'specific' and session_config['modifier'] is False:
+        index = 2
+    elif session_config["format"] == 'descriptive' and session_config['modifier'] is True:
+        index = 3
+    else:
+        index = 4
+
+    return f"assets/gpt3-chatbots/{session_config['topic']}-00{index}.yml"
 
 router = APIRouter()
-
 
 @router.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
@@ -26,17 +37,15 @@ async def websocket_endpoint(websocket: WebSocket):
                 print(f"Init new chat session - {client_data['data']}")
                 session_config = client_data['data']
                 if session_config["type"] == 'preset':
-                    if session_config["format"] == 'specific' and session_config["modifier"] is True:
-                        index = 1
-                    elif session_config["format"] == 'specific' and session_config['modifier'] is False:
-                        index = 2
-                    elif session_config["format"] == 'descriptive' and session_config['modifier'] is True:
-                        index = 3
-                    else:
-                        index = 4
-
+                    template_path = _get_gpt3_chatbot_config_path(session_config)
+                    with open(template_path) as tf:
+                        yml = yaml.load(tf, yaml.FullLoader)
+                        await websocket.send_json({"event": ChatEvent.MountPromptTemplate, "data": yml["prompt-base"]}, "text")
                     await chat_session_manager.init_session(websocket, ChatSession(
-                        GPT3StaticPromptResponseGenerator.from_yml(f"assets/gpt3-chatbots/{session_config['topic']}-00{index}.yml")))
+                        GPT3StaticPromptResponseGenerator.from_yml(template_path)))
+                elif session_config["type"] == "custom":
+                    await chat_session_manager.init_session(websocket, ChatSession(
+                        GPT3StaticPromptResponseGenerator(prompt_base=session_config["prompt_body"])))
     except WebSocketDisconnect as disconnect_ex:
         print(f"WebSocket disconnect - {disconnect_ex.reason}, {disconnect_ex.code}")
         chat_session_manager.disconnect_client(websocket)

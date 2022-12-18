@@ -52,7 +52,7 @@ class GPT3StaticPromptResponseGenerator(ResponseGenerator):
         self.max_tokens = 256
 
         self.gpt3_params = gpt3_params or dict(
-            temparature=0.9,
+            temperature=0.9,
             presence_penalty=0.6,
             frequency_penalty=0.5,
             top_p=1
