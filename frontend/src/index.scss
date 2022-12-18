@@ -95,4 +95,10 @@ code {
       }
     }
   }
+
+  .content-section{
+    p{
+      @apply text-gray-200;
+    }
+  }
 }
