@@ -3,8 +3,14 @@ import {ChangeEventHandler, MouseEventHandler, useCallback, useMemo, useRef, use
 import {ArrowLeftIcon, CpuChipIcon, PaintBrushIcon} from "@heroicons/react/24/solid";
 import isEqual from "react-fast-compare"
 import {useDebounceCallback} from "@react-hook/debounce";
+import {ComboBox} from "./common/ComboBox";
 
 const MAX_TOKENS = 400
+
+const MODELS = [
+    "text-davinci-003",
+    "text-davinci-002"
+]
 
 export const ConfigPanel = (props: {
     config: SessionConfig,
@@ -85,12 +91,29 @@ export const ConfigPanel = (props: {
 
     return <div className="py-2 px-3 flex flex-col h-full">
         {
-            configMode === "preset" ? <><PresetConfigViewContent config={props.config as SessionPresetConfig}
-                                                                 onConfigUpdate={props.onConfigUpdate}/>
-                    <hr/>
-                </> :
-                undefined
+            configMode === "preset" ? <PresetConfigViewContent config={props.config as SessionPresetConfig}
+                                                                 onConfigUpdate={props.onConfigUpdate}/> : undefined
         }
+        <div className={"flex flex-row items-center justify-between my-2"}>
+            <div className={"h3-style mt-1.5"}>Model</div>
+            <ComboBox data={MODELS} onChange={function (item: string): void {
+                switch(configMode){
+                    case "preset":
+                        props.onConfigUpdate({
+                            ...props.config,
+                            model: item
+                        })
+                        break;
+                    case "custom":
+                        setCustomConfigOnEdit({
+                            ...customConfigOnEdit!!,
+                            model: item
+                        })
+                        break;
+                }
+            }} value={configMode == "preset" ? props.config.model : customConfigOnEdit?.model}/>
+        </div>
+        <hr/>
         <h3>Prompt Template</h3>
         <textarea className={"w-full flex-1 font-mono text-xs resize-none bg-gray-700/90 rounded-md text-white p-2"}
                   ref={promptTextAreaRef}
@@ -141,12 +164,12 @@ const TOPICS = [
     },
     {
         icon: "",
-        title: "Work & Productivity",
+        title: "Work",
         key: "work"
     },
     {
         icon: "",
-        title: "Food intake",
+        title: "Food Intake",
         key: "diet"
     },
 ]
@@ -218,7 +241,7 @@ const PresetConfigViewContent = (props: {
                 </button>
             </div>
         </div>
-        <div className="flex flex-row items-center py-3">
+        <div className="flex flex-row items-center py-1">
             <div className={"h3-style flex-1"}>Personality Modifier</div>
             <div className={"button-group"}>
                 <button id={"btn-modifier-true"} onClick={onSelectionButtonClick}

@@ -12,7 +12,7 @@ from chatbot.chatbot import ResponseGenerator, DialogTurn, RegenerateRequestExce
 class GPT3StaticPromptResponseGenerator(ResponseGenerator):
 
     @classmethod
-    def from_yml(cls, file_path: str):
+    def from_yml(cls, file_path: str, model: str | None):
         with open(path.join(getcwd(), file_path), 'r') as f:
             yml_data: dict = yaml.load(f, Loader=yaml.FullLoader)
             print(yml_data)
@@ -23,7 +23,8 @@ class GPT3StaticPromptResponseGenerator(ResponseGenerator):
                 system_prefix=yml_data["system-prefix"],
                 line_separator=yml_data["line-separator"],
                 initial_system_message=yml_data["initial-system-utterance"],
-                gpt3_params=yml_data["gpt3-params"]
+                gpt3_params=yml_data["gpt3-params"],
+                gpt3_model=model
                        )
 
     def __init__(self,

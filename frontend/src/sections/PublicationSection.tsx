@@ -1,8 +1,9 @@
-import {Section} from "../components/Section";
+import {Section} from "../components/common/Section";
 import ReactPrismjs from '@uiw/react-prismjs'
 import 'prismjs-bibtex'
 import 'prism-themes/themes/prism-solarized-dark-atom.css'
 
+// eslint-disable-next-line no-multi-str
 const BibTexO4R = "@inproceedings{wei2023llmchatbot,\n\
     title        = {{Leveraging Large Language Models to Power Chatbots for Collecting User Self-Reported Data}},\n\
     author       = {Wei, Jing and Kim, Sungdong and Jung, Hyunhoon and Kim, Young-Ho},\n\

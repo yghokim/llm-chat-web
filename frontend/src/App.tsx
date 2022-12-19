@@ -1,7 +1,6 @@
 import React from 'react';
 import './App.scss';
 import {ChatbotPlayground} from "./components/ChatbotPlayground";
-import {Section} from "./components/Section";
 import {AboutSection} from "./sections/AboutSection";
 import {PublicationSection} from "./sections/PublicationSection";
 import {AckSection} from "./sections/AckSection";
