@@ -2,6 +2,9 @@ import {DEFAULT_PRESET_CONFIG, SessionConfig, SessionCustomConfig, SessionPreset
 import {ChangeEventHandler, MouseEventHandler, useCallback, useMemo, useRef, useState} from "react";
 import {ArrowLeftIcon, CpuChipIcon, PaintBrushIcon} from "@heroicons/react/24/solid";
 import isEqual from "react-fast-compare"
+import {useDebounceCallback} from "@react-hook/debounce";
+
+const MAX_TOKENS = 400
 
 export const ConfigPanel = (props: {
     config: SessionConfig,
@@ -14,11 +17,24 @@ export const ConfigPanel = (props: {
     const [customConfigOnEdit, setCustomConfigOnEdit] = useState<SessionCustomConfig | undefined>(undefined)
     const [customConfigOnEditOriginal, setCustomConfigOnEditOriginal] = useState<SessionCustomConfig | undefined>(undefined)
 
+    const [tokenCount, setTokenCount] = useState<number | undefined>(undefined)
+
     const isCustomConfigEdited = useMemo(() => {
         return !isEqual(customConfigOnEdit, customConfigOnEditOriginal)
     }, [customConfigOnEdit, customConfigOnEditOriginal])
 
     const promptTextAreaRef = useRef<HTMLTextAreaElement>(null)
+
+    const updateTokenLength = useDebounceCallback(useCallback((text: string)=>{
+        setTokenCount(undefined)
+        fetch(process.env.REACT_APP_API_URL + '/api/v1/utils/count_tokens', {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text })
+        }).then(response => response.json()).then(result => {
+            setTokenCount(result)
+        })
+    }, []), 200, false)
 
     const onPromptTemplateEdit: ChangeEventHandler<HTMLTextAreaElement> = useCallback((ev) => {
         if (customConfigOnEdit) {
@@ -26,8 +42,9 @@ export const ConfigPanel = (props: {
                 ...customConfigOnEdit,
                 prompt_body: ev.target.value
             })
+            updateTokenLength(ev.target.value)
         }
-    }, [customConfigOnEdit])
+    }, [customConfigOnEdit, updateTokenLength])
 
     const onApplyButtonClick = useCallback(() => {
         if (customConfigOnEdit) {
@@ -50,6 +67,8 @@ export const ConfigPanel = (props: {
                     setCustomConfigOnEdit(newConfig)
                     setCustomConfigOnEditOriginal(newConfigOrginal)
                     setConfigMode("custom")
+
+                    updateTokenLength(newConfig.prompt_body)
                     requestAnimationFrame(() => {
                         promptTextAreaRef.current?.focus()
                     })
@@ -75,9 +94,15 @@ export const ConfigPanel = (props: {
         <h3>Prompt Template</h3>
         <textarea className={"w-full flex-1 font-mono text-xs resize-none bg-gray-700/90 rounded-md text-white p-2"}
                   ref={promptTextAreaRef}
+                  data-gramm_editor="false"
                   value={configMode === "preset" ? props.promptTemplate : customConfigOnEdit?.prompt_body}
                   onChange={configMode === "custom" ? onPromptTemplateEdit : undefined}
                   disabled={configMode === "preset"}/>
+        {
+            configMode === 'custom' ? <div className={"text-xs mt-1 pr-1 text-right"}>
+                Token count: <span className={`${tokenCount && tokenCount > MAX_TOKENS ? 'text-red-500 font-semibold' : undefined}`}>{tokenCount}</span>/{MAX_TOKENS}
+            </div> : undefined
+        }
         <div className={`mt-2 flex ${configMode === "custom" ? "justify-between" : "justify-end"}`}>
             <button className={`button-secondary flex items-center`} onClick={onModeButtonClick}>
                 {
@@ -91,7 +116,7 @@ export const ConfigPanel = (props: {
             </button>
             {
                 configMode === 'custom' ? <button className={"button-secondary flex items-center"}
-                                                  disabled={!(configMode === "custom" && isCustomConfigEdited)}
+                                                  disabled={!(configMode === "custom" && isCustomConfigEdited && tokenCount && tokenCount < MAX_TOKENS)}
                                                   onClick={onApplyButtonClick}>
                     <CpuChipIcon className={"w-5 mr-1"}/>
                     <span>Apply to Chatbot!</span>

@@ -1,3 +1,4 @@
+import tiktoken
 import yaml
 from fastapi import APIRouter, Depends, HTTPException
 from starlette.websockets import WebSocket, WebSocketDisconnect
@@ -44,8 +45,11 @@ async def websocket_endpoint(websocket: WebSocket):
                     await chat_session_manager.init_session(websocket, ChatSession(
                         GPT3StaticPromptResponseGenerator.from_yml(template_path)))
                 elif session_config["type"] == "custom":
-                    await chat_session_manager.init_session(websocket, ChatSession(
-                        GPT3StaticPromptResponseGenerator(prompt_base=session_config["prompt_body"])))
+                    encoder = tiktoken.get_encoding("gpt2")
+                    token_len = len(encoder.encode(session_config["prompt_body"]))
+                    if token_len < 400:
+                        await chat_session_manager.init_session(websocket, ChatSession(
+                            GPT3StaticPromptResponseGenerator(prompt_base=session_config["prompt_body"])))
     except WebSocketDisconnect as disconnect_ex:
         print(f"WebSocket disconnect - {disconnect_ex.reason}, {disconnect_ex.code}")
         chat_session_manager.disconnect_client(websocket)

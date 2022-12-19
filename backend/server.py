@@ -11,13 +11,14 @@ from dotenv import load_dotenv
 
 from chatbot.chatbot import DialogTurn
 from chatbot.generators.gpt3_generator import GPT3StaticPromptResponseGenerator
-from .routers import chat
+from .routers import chat, utils
 
 print("Load env:", load_dotenv(path.join(getcwd(), ".env")))
 
 app = FastAPI()
 
 app.include_router(chat.router, prefix="/api/v1/chat")
+app.include_router(utils.router, prefix="/api/v1/utils")
 
 ##########################################################
 

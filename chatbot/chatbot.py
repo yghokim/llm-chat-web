@@ -1,7 +1,7 @@
 from time import perf_counter
 from abc import ABC, abstractmethod
 
-from backend.event import AsyncSubject, AsyncBehaviorSubject
+from backend.core.event import AsyncSubject, AsyncBehaviorSubject
 
 
 class RegenerateRequestException(Exception):

@@ -13,6 +13,7 @@ openai = "^0.25.0"
 python-dotenv = "^0.21.0"
 pyyaml = "^6.0"
 reactivex = "^4.0.4"
+tiktoken = "^0.1.1"
 
 [tool.poetry.dev-dependencies]
 
