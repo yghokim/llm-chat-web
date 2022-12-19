@@ -110,3 +110,25 @@
     flex-direction: column;
   }
 }
+
+.w-prismjs{
+  code.language-bibtex{
+    text-shadow: initial !important;
+    font-size: 10pt !important;
+    font-weight: 600;
+    color: white;
+
+    .token {
+      &.string {
+        color: white;
+      }
+      &.class-name{
+        color: lightblue;
+      }
+      &.property{
+        color: #d79fdc;
+      }
+    }
+  }
+  background: rgba(50,50,50,0.2) !important;
+}
