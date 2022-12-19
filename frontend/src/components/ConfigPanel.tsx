@@ -89,14 +89,7 @@ export const ConfigPanel = (props: {
         }
     }, [configMode, props.onConfigUpdate, props.promptTemplate, props.config])
 
-    return <div className="py-2 px-3 flex flex-col h-full">
-        {
-            configMode === "preset" ? <PresetConfigViewContent config={props.config as SessionPresetConfig}
-                                                                 onConfigUpdate={props.onConfigUpdate}/> : undefined
-        }
-        <div className={"flex flex-row items-center justify-between my-2"}>
-            <div className={"h3-style mt-1.5"}>Model</div>
-            <ComboBox data={MODELS} onChange={function (item: string): void {
+    const onModelSelected = useCallback((item: string) => {
                 switch(configMode){
                     case "preset":
                         props.onConfigUpdate({
@@ -111,7 +104,16 @@ export const ConfigPanel = (props: {
                         })
                         break;
                 }
-            }} value={configMode == "preset" ? props.config.model : customConfigOnEdit?.model}/>
+            }, [configMode, customConfigOnEdit, props.onConfigUpdate, props.config])
+
+    return <div className="py-2 px-3 flex flex-col h-full">
+        {
+            configMode === "preset" ? <PresetConfigViewContent config={props.config as SessionPresetConfig}
+                                                                 onConfigUpdate={props.onConfigUpdate}/> : undefined
+        }
+        <div className={"flex flex-row items-center justify-between my-2"}>
+            <div className={"h3-style mt-1.5"}>Model</div>
+            <ComboBox data={MODELS} onChange={onModelSelected} value={configMode == "preset" ? props.config.model : customConfigOnEdit?.model}/>
         </div>
         <hr/>
         <h3>Prompt Template</h3>

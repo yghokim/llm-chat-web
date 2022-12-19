@@ -1,14 +1,17 @@
 import {DialogTurn} from "../types";
-import {ChangeEvent, useCallback, useRef, useState} from "react";
+import {ChangeEvent, useCallback, useEffect, useRef, useState} from "react";
 import {useDebounceCallback} from "@react-hook/debounce";
 import {PaperAirplaneIcon} from "@heroicons/react/24/solid";
+import {ArrowPathIcon} from "@heroicons/react/20/solid";
 
 export const ChatPanel = (props: {
     className?: string,
     inputContainerClassName?: string,
     dialog: Array<DialogTurn>,
     isProcessing: boolean,
-    onUserNewMessage: (message: string) => void
+    onUserNewMessage: (message: string) => void,
+    onRegenerationRequest: () => void
+
 }) => {
 
     const scrollViewRef = useRef<HTMLDivElement>(null)
@@ -45,14 +48,29 @@ export const ChatPanel = (props: {
         }
     }, [onSendButtonClick])
 
+    useEffect(()=>{
+        requestAnimationFrame(()=>{
+            scrollToBottom()
+        })
+    }, [props.dialog.length])
+
     return <div className={`flex flex-col h-[300px] md:h-[450px] ${props.className}`}>
         <div ref={scrollViewRef} className="flex-1 overflow-y-auto py-3">
                     {
                         props.dialog.map((turn, i) => {
-                            return <div className={`turn-container ${turn.is_user ? "user" : "system"}`} key={i}>
+                            const isLastSystemMessage = props.dialog.length > 2 && i === props.dialog.length - 1 && !turn.is_user
+                            return <div className={`turn-container ${isLastSystemMessage ? "last-system-message" : undefined} ${turn.is_user ? "user" : "system"}`} key={i}>
                             <span className="callout">
                                 {turn.message}
-                            </span>
+                            </span>{
+                                isLastSystemMessage && !props.isProcessing ? <button
+                                    className={"button-tiny ml-3 pl-1 flex items-center"}
+                                    onClick={props.onRegenerationRequest}
+                                >
+                                    <ArrowPathIcon className={"w-4 mr-1"}/>
+                                    <span>Regenerate</span>
+                                </button> : undefined
+                            }
                             </div>
                         })
                     }

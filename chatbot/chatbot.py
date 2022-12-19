@@ -84,3 +84,15 @@ class ChatSession():
         system_message, elapsed = await self._response_generator.get_response(self._dialog)
         await self._push_new_turn(DialogTurn(system_message, is_user=False))
         await self._on_is_processing.on_next(False)
+
+    async def regen_system_message(self) -> bool:
+        if len(self._dialog) > 2 and self._dialog[len(self._dialog) - 1].is_user is False:
+            await self._on_is_processing.on_next(True)
+            self._dialog.pop()
+            system_message, elapsed = await self._response_generator.get_response(self._dialog)
+            await self._push_new_turn(DialogTurn(system_message, is_user=False))
+            await self._on_is_processing.on_next(False)
+
+            return True
+        else:
+            return False

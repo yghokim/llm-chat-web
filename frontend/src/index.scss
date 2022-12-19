@@ -61,6 +61,10 @@ code {
     }
   }
 
+  .button-tiny {
+    @apply button-secondary text-xs font-normal bg-gray-100 border-none;
+  }
+
   .button-group{
     .button-secondary{
       @apply rounded-none;
@@ -95,6 +99,11 @@ code {
 
     &.system{
       @apply items-start;
+
+      &.last-system-message{
+        @apply flex-row items-end justify-start;
+      }
+
       .callout{
         @apply rounded-tl-none text-white text-sm;
         background: rgb(79,164,164);

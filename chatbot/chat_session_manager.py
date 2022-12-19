@@ -55,5 +55,10 @@ class ChatSessionManager:
             if self.chat_sessions[websocket] is not None:
                 await self.chat_sessions[websocket].push_user_message(message)
 
+    async def regen_system_message(self, websocket: WebSocket):
+        if websocket in self.chat_sessions:
+            if self.chat_sessions[websocket] is not None:
+                await self.chat_sessions[websocket].regen_system_message()
+
 
 chat_session_manager = ChatSessionManager()

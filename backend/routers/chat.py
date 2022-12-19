@@ -11,6 +11,7 @@ from chatbot.generators.gpt3_generator import GPT3StaticPromptResponseGenerator
 class ClientWebSocketAction:
     InsertUserMessage = "insert-user-message"
     InitChatSession = "init-chat-session"
+    RegenerateSystemMessage = "regen-system-message"
 
 def _get_gpt3_chatbot_config_path(session_config: dict):
     if session_config["format"] == 'specific' and session_config["modifier"] is True:
@@ -34,7 +35,9 @@ async def websocket_endpoint(websocket: WebSocket):
             client_data = await websocket.receive_json()
             if client_data["action"] == ClientWebSocketAction.InsertUserMessage:
                 await chat_session_manager.insert_user_message(websocket, client_data["data"])
-            if client_data["action"] == ClientWebSocketAction.InitChatSession:
+            elif client_data["action"] == ClientWebSocketAction.RegenerateSystemMessage:
+                await chat_session_manager.regen_system_message(websocket)
+            elif client_data["action"] == ClientWebSocketAction.InitChatSession:
                 print(f"Init new chat session - {client_data['data']}")
                 session_config = client_data['data']
                 if session_config["type"] == 'preset':

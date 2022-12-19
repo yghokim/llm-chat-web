@@ -4,7 +4,6 @@ import {
     ClientWebSocketAction, DEFAULT_PRESET_CONFIG,
     DialogTurn,
     SessionConfig,
-    SessionPresetConfig,
     WebSocketEvent,
     WebSocketEventArgs
 } from "../types";
@@ -66,6 +65,12 @@ export const ChatbotPlayground = () => {
         onWebSocketOpen()
     }, [onWebSocketOpen])
 
+    const regenerateLastSystemMessage = useCallback(() => {
+                           const copied = dialog.slice()
+                           copied.pop()
+                           setDialog(copied)
+                           sendJsonMessage({action: ClientWebSocketAction.RegenerateSystemMessage})
+                       }, [dialog, sendJsonMessage])
 
     return <div className="container mx-auto">
         <div className={"mx-6 bg-white rounded-xl flex flex-col md:flex-row shadow-2xl"}>
@@ -75,7 +80,8 @@ export const ChatbotPlayground = () => {
             <ChatPanel dialog={dialog} isProcessing={isProcessing}
                        className={"md:flex-1 border-t-gray-200 border-t-[1px] md:border-none"}
                        inputContainerClassName={"rounded-b-xl md:rounded-br-xl md:rounded-l-none"}
-                       onUserNewMessage={onUserNewMessage}/>
+                       onUserNewMessage={onUserNewMessage}
+                       onRegenerationRequest={regenerateLastSystemMessage}/>
         </div>
     </div>
 }

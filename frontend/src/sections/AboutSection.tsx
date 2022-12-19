@@ -6,7 +6,7 @@ const MEMBERS = [
         portrait: require('../assets/portraits/jwei.jpg'),
         name: "Jing Wei*",
         affiliation: "Univ. of Melbourne",
-        affiliation2: "*Intern @ NAVER"
+        affiliation2: "*Intern @ NAVER AI Lab"
     },
     {
         portrait: require('../assets/portraits/skim.jpg'),
