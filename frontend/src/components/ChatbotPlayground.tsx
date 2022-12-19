@@ -68,13 +68,13 @@ export const ChatbotPlayground = () => {
 
 
     return <div className="container mx-auto">
-        <div className={"mx-6 bg-white rounded-xl flex flex-row shadow-2xl"}>
-            <div className={"flex-1 bg-slate-50 border-r-[1px] rounded-l-xl"}>
+        <div className={"mx-6 bg-white rounded-xl flex flex-col md:flex-row shadow-2xl"}>
+            <div className={"max-md:h-[400px] md:flex-1 bg-slate-50 border-r-[1px] rounded-t-xl rounded-b-none md:rounded-l-xl md:rounded-r-none"}>
                 <ConfigPanel config={sessionConfig} onConfigUpdate={onConfigChanged} promptTemplate={promptTemplate}/>
             </div>
             <ChatPanel dialog={dialog} isProcessing={isProcessing}
-                       className={"flex-1"}
-                       inputContainerClassName={"rounded-br-xl"}
+                       className={"md:flex-1 border-t-gray-200 border-t-[1px] md:border-none"}
+                       inputContainerClassName={"rounded-b-xl md:rounded-br-xl md:rounded-l-none"}
                        onUserNewMessage={onUserNewMessage}/>
         </div>
     </div>

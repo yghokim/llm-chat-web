@@ -45,7 +45,7 @@ export const ChatPanel = (props: {
         }
     }, [onSendButtonClick])
 
-    return <div className={`flex flex-col h-[450px] ${props.className}`}>
+    return <div className={`flex flex-col h-[300px] md:h-[450px] ${props.className}`}>
         <div ref={scrollViewRef} className="flex-1 overflow-y-auto py-3">
                     {
                         props.dialog.map((turn, i) => {

@@ -30,7 +30,7 @@ export const ConfigPanel = (props: {
     }, [customConfigOnEdit])
 
     const onApplyButtonClick = useCallback(() => {
-        if(customConfigOnEdit) {
+        if (customConfigOnEdit) {
             setCustomConfigOnEditOriginal(JSON.parse(JSON.stringify(customConfigOnEdit)))
             props.onConfigUpdate(customConfigOnEdit)
         }
@@ -184,23 +184,27 @@ const PresetConfigViewContent = (props: {
 
         <div className="flex flex-row items-center py-3 mt-2">
             <div className={"h3-style flex-1"}>Information Format</div>
-            <button id={"btn-format-specific"} onClick={onSelectionButtonClick}
-                    className={`button-secondary ${props.config.type === "preset" && props.config.format === "specific" ? 'selected' : undefined}`}>Specific
-            </button>
-            <button id={"btn-format-descriptive"} onClick={onSelectionButtonClick}
-                    className={`button-secondary ml-2 ${props.config.type === "preset" && props.config.format === "descriptive" ? 'selected' : undefined}`}>Descriptive
-            </button>
+            <div className={"button-group"}>
+                <button id={"btn-format-specific"} onClick={onSelectionButtonClick}
+                        className={`button-secondary ${props.config.type === "preset" && props.config.format === "specific" ? 'selected' : undefined}`}>Specific
+                </button>
+                <button id={"btn-format-descriptive"} onClick={onSelectionButtonClick}
+                        className={`button-secondary ${props.config.type === "preset" && props.config.format === "descriptive" ? 'selected' : undefined}`}>Descriptive
+                </button>
+            </div>
         </div>
         <div className="flex flex-row items-center py-3">
             <div className={"h3-style flex-1"}>Personality Modifier</div>
-            <button id={"btn-modifier-true"} onClick={onSelectionButtonClick}
-                    className={`button-secondary ${props.config.type === "preset" && props.config.modifier ? 'selected' : undefined}`}>With
-                modifier
-            </button>
-            <button id={"btn-modifier-false"} onClick={onSelectionButtonClick}
-                    className={`button-secondary ml-2 ${props.config.type === "preset" && props.config.modifier ? undefined : 'selected'}`}>No
-                modifier
-            </button>
+            <div className={"button-group"}>
+                <button id={"btn-modifier-true"} onClick={onSelectionButtonClick}
+                        className={`button-secondary ${props.config.type === "preset" && props.config.modifier ? 'selected' : undefined}`}>With
+                    modifier
+                </button>
+                <button id={"btn-modifier-false"} onClick={onSelectionButtonClick}
+                        className={`button-secondary ${props.config.type === "preset" && props.config.modifier ? undefined : 'selected'}`}>No
+                    modifier
+                </button>
+            </div>
         </div>
     </>
 }

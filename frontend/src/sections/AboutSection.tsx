@@ -30,8 +30,8 @@ const MEMBERS = [
 
 export const AboutSection = () => {
     return <Section title={"About This Project"}>
-        <div className={"flex items-start"}>
-            <div className={"flex-1 max-w-[50%] pr-3"}>
+        <div className={"flex items-start flex-col lg:flex-row"}>
+            <div className={"lg:flex-1 lg:max-w-[50%] lg:pr-3 mb-8 lg:mb-0"}>
                 <p>This work is an internship project at NAVER AI Lab, done in collaboration across researchers in the
                     fields of Human-Computer Interaction and Natural Language Processing.
                 </p>
