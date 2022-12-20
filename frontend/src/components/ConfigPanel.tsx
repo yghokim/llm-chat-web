@@ -66,7 +66,9 @@ export const ConfigPanel = (props: {
                     const newConfig: SessionCustomConfig = {
                         type: "custom",
                         prompt_body: props.promptTemplate,
-                        model: props.config.model
+                        model: props.config.model,
+                        system_alias: "Me",
+                        user_alias: "Customer"
                     }
                     const newConfigOrginal = JSON.parse(JSON.stringify(newConfig))
 
@@ -106,6 +108,25 @@ export const ConfigPanel = (props: {
                 }
             }, [configMode, customConfigOnEdit, props.onConfigUpdate, props.config])
 
+    const onAgentAliasChange: ChangeEventHandler<HTMLInputElement> = useCallback((ev)=>{
+        if(customConfigOnEdit!=null) {
+            setCustomConfigOnEdit({
+                ...customConfigOnEdit,
+                system_alias: ev.target.value
+            })
+        }
+    },[customConfigOnEdit])
+
+    const onUserAliasChange: ChangeEventHandler<HTMLInputElement> = useCallback((ev)=>{
+        if(customConfigOnEdit!=null) {
+            setCustomConfigOnEdit({
+                ...customConfigOnEdit,
+                user_alias: ev.target.value
+            })
+        }
+    },[customConfigOnEdit])
+
+
     return <div className="py-2 px-3 flex flex-col h-full">
         {
             configMode === "preset" ? <PresetConfigViewContent config={props.config as SessionPresetConfig}
@@ -116,6 +137,24 @@ export const ConfigPanel = (props: {
             <ComboBox data={MODELS} onChange={onModelSelected} value={configMode == "preset" ? props.config.model : customConfigOnEdit?.model}/>
         </div>
         <hr/>
+        {
+            configMode === 'custom' ? <div className={"flex flex-wrap items-center -m-2 pb-3"}>
+                <div className={"flex items-center m-2"}>
+                    <div className={"h3-style"}>Agent Alias</div>
+                    <input className={"text-input w-[6rem] sm ml-2 bg-white"} placeholder={"Me"}
+                           value={customConfigOnEdit?.system_alias}
+                           onChange={onAgentAliasChange}
+                    />
+                </div>
+                <div className={"flex items-center m-2"}>
+                    <div className={"h3-style"}>User Alias</div>
+                    <input className={"text-input w-[6rem] sm ml-2 bg-white"} placeholder={"Customer"}
+                           value={customConfigOnEdit?.user_alias}
+                           onChange={onUserAliasChange}
+                    />
+                </div>
+            </div> : undefined
+        }
         <h3>Prompt Template</h3>
         <textarea className={"w-full flex-1 font-mono text-xs resize-none bg-gray-700/90 rounded-md text-white p-2"}
                   ref={promptTextAreaRef}

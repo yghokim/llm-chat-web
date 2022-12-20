@@ -41,7 +41,9 @@ export interface SessionPresetConfig extends SessionConfigBase{
 
 export interface SessionCustomConfig extends SessionConfigBase{
     type: "custom",
-    prompt_body: string
+    prompt_body: string,
+    system_alias: string,
+    user_alias: string
 }
 
 export type SessionConfig = SessionPresetConfig | SessionCustomConfig
