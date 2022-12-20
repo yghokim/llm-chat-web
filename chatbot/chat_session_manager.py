@@ -31,6 +31,11 @@ class ChatSessionManager:
 
             self.chat_sessions.pop(websocket)
 
+    async def restart_session(self, websocket):
+        if websocket in self.chat_sessions:
+            if self.chat_sessions[websocket] is not None:
+                await self.chat_sessions[websocket].initialize()
+
     async def init_session(self, websocket: WebSocket, session: ChatSession):
 
         async def handle_new_message(turn: DialogTurn):

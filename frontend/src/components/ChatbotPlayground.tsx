@@ -72,6 +72,11 @@ export const ChatbotPlayground = () => {
                            sendJsonMessage({action: ClientWebSocketAction.RegenerateSystemMessage})
                        }, [dialog, sendJsonMessage])
 
+    const restartSession = useCallback(()=>{
+                           setDialog([])
+                           sendJsonMessage({action: ClientWebSocketAction.RestartChatSession})
+            }, [sendJsonMessage])
+
     return <div className="container mx-auto">
         <div className={"mx-6 bg-white rounded-xl flex flex-col md:flex-row shadow-2xl"}>
             <div className={"max-md:h-[400px] md:flex-1 bg-slate-50 border-r-[1px] rounded-t-xl rounded-b-none md:rounded-l-xl md:rounded-r-none"}>
@@ -81,7 +86,7 @@ export const ChatbotPlayground = () => {
                        className={"md:flex-1 border-t-gray-200 border-t-[1px] md:border-none"}
                        inputContainerClassName={"rounded-b-xl md:rounded-br-xl md:rounded-l-none"}
                        onUserNewMessage={onUserNewMessage}
-                       onRegenerationRequest={regenerateLastSystemMessage}/>
+                       onRegenerationRequest={regenerateLastSystemMessage} onRestartRequest={restartSession}/>
         </div>
     </div>
 }

@@ -1,7 +1,8 @@
 export enum ClientWebSocketAction {
     InsertUserMessage = "insert-user-message",
     InitChatSession = "init-chat-session",
-    RegenerateSystemMessage = "regen-system-message"
+    RegenerateSystemMessage = "regen-system-message",
+    RestartChatSession = "restart-chat-session"
 }
 
 export enum WebSocketEvent {

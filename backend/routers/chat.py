@@ -12,6 +12,7 @@ class ClientWebSocketAction:
     InsertUserMessage = "insert-user-message"
     InitChatSession = "init-chat-session"
     RegenerateSystemMessage = "regen-system-message"
+    RestartChatSession = "restart-chat-session"
 
 def _get_gpt3_chatbot_config_path(session_config: dict):
     if session_config["format"] == 'specific' and session_config["modifier"] is True:
@@ -37,6 +38,8 @@ async def websocket_endpoint(websocket: WebSocket):
                 await chat_session_manager.insert_user_message(websocket, client_data["data"])
             elif client_data["action"] == ClientWebSocketAction.RegenerateSystemMessage:
                 await chat_session_manager.regen_system_message(websocket)
+            elif client_data["action"] == ClientWebSocketAction.RestartChatSession:
+                await chat_session_manager.restart_session(websocket)
             elif client_data["action"] == ClientWebSocketAction.InitChatSession:
                 print(f"Init new chat session - {client_data['data']}")
                 session_config = client_data['data']
