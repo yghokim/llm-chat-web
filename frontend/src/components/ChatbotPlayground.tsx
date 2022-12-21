@@ -1,5 +1,4 @@
-import {useCallback, useMemo, useState} from "react";
-import useWebSocket from "react-use-websocket";
+import {useCallback, useEffect, useMemo, useRef, useState} from "react";
 import {
     ClientWebSocketAction, DEFAULT_PRESET_CONFIG,
     DialogTurn,
@@ -11,6 +10,10 @@ import {ChatPanel} from "./ChatPanel";
 import {ConfigPanel} from "./ConfigPanel";
 import {useDebounceCallback} from "@react-hook/debounce";
 
+
+const url = new URL(process.env.REACT_APP_API_URL!!)
+const WEBSOCKET_URL = "ws://" + url.hostname + ":" + url.port + "/api/v1/chat/ws"
+
 export const ChatbotPlayground = () => {
 
     const [sessionConfig, setSessionConfig] = useState<SessionConfig>(DEFAULT_PRESET_CONFIG)
@@ -20,10 +23,16 @@ export const ChatbotPlayground = () => {
 
     const [dialog, setDialog] = useState<Array<DialogTurn>>([])
 
-    const webSocketUrl = useMemo(() => {
-        const url = new URL(process.env.REACT_APP_API_URL!!)
-        return "ws://" + url.hostname + ":" + url.port + "/api/v1/chat/ws"
-    }, [])
+    const [websocketConnected, setWebsocketConnected] = useState(false)
+
+    const websocket = useRef<WebSocket|null>(null)
+    const onMessageRef = useRef<((event: WebSocketEventMap['message']) => void) | null>(null)
+
+    const sendJsonMessage = useCallback((data: object)=>{
+        if(websocketConnected){
+            websocket.current?.send(JSON.stringify(data))
+        }
+    }, [websocketConnected])
 
     const onWebSocketMessage = useCallback((event: WebSocketEventMap['message']) => {
         const messageObject: WebSocketEventArgs = JSON.parse(event.data)
@@ -44,17 +53,46 @@ export const ChatbotPlayground = () => {
 
     }, [dialog])
 
-    const onWebSocketOpen = useDebounceCallback(useCallback(() => {
-        sendJsonMessage({action: ClientWebSocketAction.InitChatSession, data: sessionConfig as any})
-        setDialog([])
-    }, [sessionConfig]), 200, false)
+    const unmounted = useRef(false)
 
-    const {readyState, sendJsonMessage} = useWebSocket(webSocketUrl, {
-        onMessage: onWebSocketMessage,
-        onOpen: onWebSocketOpen,
-        share: true,
-        retryOnError: true
-    })
+    useEffect(()=>{
+
+        const initWebsocket = () => {
+            if(websocket.current == null || websocket.current.readyState >= 2) {
+                websocket.current = new WebSocket(WEBSOCKET_URL)
+                websocket.current.onopen = () => {
+                    console.log("Websocket was connected.")
+                    setWebsocketConnected(true)
+                }
+
+                websocket.current.onmessage = (ev) => {
+                    onMessageRef.current?.(ev)
+                }
+
+                websocket.current.onclose = (ev) => {
+                    console.log("Websocket was closed.")
+                    setWebsocketConnected(false)
+                    setTimeout(initWebsocket, 2000);
+                }
+            }else{
+                console.log("Websocket is already active. Skip reconnection.")
+            }
+        }
+        initWebsocket()
+
+        return () => {
+            unmounted.current = true
+            websocket.current?.close()
+        }
+    }, [])
+
+    useEffect(()=>{
+        sendJsonMessage({action: ClientWebSocketAction.InitChatSession, data: sessionConfig as any})
+    }, [])
+
+    useEffect(()=>{
+        onMessageRef.current = onWebSocketMessage
+    }, [onWebSocketMessage])
 
     const onUserNewMessage = useCallback((message: string) => {
         sendJsonMessage({action: ClientWebSocketAction.InsertUserMessage, data: message})
@@ -62,8 +100,14 @@ export const ChatbotPlayground = () => {
 
     const onConfigChanged = useCallback((config: SessionConfig) => {
         setSessionConfig(config)
-        onWebSocketOpen()
-    }, [onWebSocketOpen])
+    }, [sendJsonMessage])
+
+    useEffect(()=>{
+        if(websocketConnected){
+            sendJsonMessage({action: ClientWebSocketAction.InitChatSession, data: sessionConfig as any})
+            setDialog([])
+        }
+    }, [sessionConfig, websocketConnected])
 
     const regenerateLastSystemMessage = useCallback(() => {
                            const copied = dialog.slice()
