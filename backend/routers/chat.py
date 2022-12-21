@@ -13,6 +13,8 @@ class ClientWebSocketAction:
     InitChatSession = "init-chat-session"
     RegenerateSystemMessage = "regen-system-message"
     RestartChatSession = "restart-chat-session"
+    RegisterClient = "register-client"
+    TerminateSession = "terminate-session"
 
 def _get_gpt3_chatbot_config_path(session_config: dict):
     if session_config["format"] == 'specific' and session_config["modifier"] is True:
@@ -36,25 +38,35 @@ async def websocket_endpoint(websocket: WebSocket):
             client_data = await websocket.receive_json()
             if client_data["action"] == ClientWebSocketAction.InsertUserMessage:
                 await chat_session_manager.insert_user_message(websocket, client_data["data"])
+
             elif client_data["action"] == ClientWebSocketAction.RegenerateSystemMessage:
                 await chat_session_manager.regen_system_message(websocket)
+
             elif client_data["action"] == ClientWebSocketAction.RestartChatSession:
                 await chat_session_manager.restart_session(websocket)
+
+            elif client_data["action"] == ClientWebSocketAction.RegisterClient:
+                await chat_session_manager.register_client(websocket, client_data["session_id"])
+
+            elif client_data["action"] == ClientWebSocketAction.TerminateSession:
+                chat_session_manager.terminate_session(client_data["session_id"])
+
             elif client_data["action"] == ClientWebSocketAction.InitChatSession:
-                print(f"Init new chat session - {client_data['data']}")
+                print(f"Init new chat session - {client_data['data']}, session id - {client_data['session_id']}")
                 session_config = client_data['data']
                 if session_config["type"] == 'preset':
                     template_path = _get_gpt3_chatbot_config_path(session_config)
                     with open(template_path) as tf:
                         yml = yaml.load(tf, yaml.FullLoader)
                         await websocket.send_json({"event": ChatEvent.MountPromptTemplate, "data": yml["prompt-base"]}, "text")
-                    await chat_session_manager.init_session(websocket, ChatSession(
+                    await chat_session_manager.init_session(websocket, ChatSession(client_data['session_id'],
                         GPT3StaticPromptResponseGenerator.from_yml(template_path, session_config["model"])))
                 elif session_config["type"] == "custom":
                     encoder = tiktoken.get_encoding("gpt2")
                     token_len = len(encoder.encode(session_config["prompt_body"]))
                     if token_len < 400:
                         await chat_session_manager.init_session(websocket, ChatSession(
+                            client_data['session_id'],
                             GPT3StaticPromptResponseGenerator(prompt_base=session_config["prompt_body"],
                                                               user_prefix=f"{session_config['user_alias'].strip()}: "
                                                                 if "user_alias" in session_config else None,

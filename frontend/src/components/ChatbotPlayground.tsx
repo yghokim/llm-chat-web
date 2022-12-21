@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useMemo, useRef, useState} from "react";
+import {useCallback, useEffect, useRef, useState} from "react";
 import {
     ClientWebSocketAction, DEFAULT_PRESET_CONFIG,
     DialogTurn,
@@ -8,7 +8,7 @@ import {
 } from "../types";
 import {ChatPanel} from "./ChatPanel";
 import {ConfigPanel} from "./ConfigPanel";
-import {useDebounceCallback} from "@react-hook/debounce";
+import { nanoid } from 'nanoid'
 
 
 const url = new URL(process.env.REACT_APP_API_URL!!)
@@ -16,7 +16,11 @@ const WEBSOCKET_URL = "ws://" + url.hostname + ":" + url.port + "/api/v1/chat/ws
 
 export const ChatbotPlayground = () => {
 
+    const sessionIdRef = useRef<string | null>(null)
+
     const [sessionConfig, setSessionConfig] = useState<SessionConfig>(DEFAULT_PRESET_CONFIG)
+    const hasConnectedToServer = useRef(false)
+
     const [promptTemplate, setPromptTemplate] = useState<string | undefined>(undefined)
 
     const [isProcessing, setIsProcessing] = useState(false)
@@ -31,6 +35,8 @@ export const ChatbotPlayground = () => {
     const sendJsonMessage = useCallback((data: object)=>{
         if(websocketConnected){
             websocket.current?.send(JSON.stringify(data))
+        }else{
+            console.log("Websocket is not connected.")
         }
     }, [websocketConnected])
 
@@ -57,12 +63,30 @@ export const ChatbotPlayground = () => {
 
     useEffect(()=>{
 
+        sessionIdRef.current = nanoid(30)
+
         const initWebsocket = () => {
             if(websocket.current == null || websocket.current.readyState >= 2) {
                 websocket.current = new WebSocket(WEBSOCKET_URL)
                 websocket.current.onopen = () => {
-                    console.log("Websocket was connected.")
+                    console.log("Websocket was connected", sessionIdRef.current)
                     setWebsocketConnected(true)
+                    if(hasConnectedToServer.current === false){
+                        setTimeout(()=>{
+                            websocket.current?.send(JSON.stringify({
+                                session_id: sessionIdRef.current,
+                                action: ClientWebSocketAction.InitChatSession,
+                                data: sessionConfig as any
+                            }))
+                            setDialog([])
+                            hasConnectedToServer.current = true
+                        }, 100)
+                    }else{
+                        websocket.current?.send(JSON.stringify({
+                                session_id: sessionIdRef.current,
+                                action: ClientWebSocketAction.RegisterClient,
+                        }))
+                    }
                 }
 
                 websocket.current.onmessage = (ev) => {
@@ -80,19 +104,22 @@ export const ChatbotPlayground = () => {
         }
         initWebsocket()
 
+        const onUnload = ()=>{
+            websocket.current?.send(JSON.stringify({action: ClientWebSocketAction.TerminateSession, session_id: sessionIdRef.current}))
+        }
+
+        window.addEventListener('unload', onUnload)
+
         return () => {
             unmounted.current = true
-            websocket.current?.close()
+            window.removeEventListener('unload', onUnload)
         }
-    }, [])
-
-    useEffect(()=>{
-        sendJsonMessage({action: ClientWebSocketAction.InitChatSession, data: sessionConfig as any})
     }, [])
 
     useEffect(()=>{
         onMessageRef.current = onWebSocketMessage
     }, [onWebSocketMessage])
+
 
     const onUserNewMessage = useCallback((message: string) => {
         sendJsonMessage({action: ClientWebSocketAction.InsertUserMessage, data: message})
@@ -100,14 +127,9 @@ export const ChatbotPlayground = () => {
 
     const onConfigChanged = useCallback((config: SessionConfig) => {
         setSessionConfig(config)
+        sendJsonMessage({session_id: sessionIdRef.current, action: ClientWebSocketAction.InitChatSession, data: config as any})
+        setDialog([])
     }, [sendJsonMessage])
-
-    useEffect(()=>{
-        if(websocketConnected){
-            sendJsonMessage({action: ClientWebSocketAction.InitChatSession, data: sessionConfig as any})
-            setDialog([])
-        }
-    }, [sessionConfig, websocketConnected])
 
     const regenerateLastSystemMessage = useCallback(() => {
                            const copied = dialog.slice()

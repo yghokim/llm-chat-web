@@ -42,7 +42,8 @@ class ResponseGenerator(ABC):
 
 class ChatSession():
 
-    def __init__(self, response_generator: ResponseGenerator):
+    def __init__(self, id: str, response_generator: ResponseGenerator):
+        self.id = id
         self._response_generator = response_generator
         self._dialog: list[DialogTurn] = []
         self._on_new_message: AsyncSubject[DialogTurn] = AsyncSubject()
