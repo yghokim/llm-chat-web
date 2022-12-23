@@ -35,7 +35,7 @@ export interface SessionConfigBase{
 
 export interface SessionPresetConfig extends SessionConfigBase{
     type: "preset"
-    format: "specific"|"descriptive"
+    format: "structured"|"descriptive"
     modifier: boolean
     topic: "sleep" | "diet" | "work" | "exercise"
 }

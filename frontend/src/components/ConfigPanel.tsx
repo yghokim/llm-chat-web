@@ -4,6 +4,7 @@ import {ArrowLeftIcon, CpuChipIcon, PaintBrushIcon} from "@heroicons/react/24/so
 import isEqual from "react-fast-compare"
 import {useDebounceCallback} from "@react-hook/debounce";
 import {ComboBox} from "./common/ComboBox";
+import {TooltipIndicator} from "./common/TooltipIndicator";
 
 const MAX_TOKENS = 400
 
@@ -133,21 +134,21 @@ export const ConfigPanel = (props: {
                                                                  onConfigUpdate={props.onConfigUpdate}/> : undefined
         }
         <div className={"flex flex-row items-center justify-between my-2"}>
-            <div className={"h3-style mt-1.5"}>Model</div>
+            <div className={"h3-style mt-1.5 flex items-center"}><span>Model</span> <TooltipIndicator id={"tt-model-name"} className={"ml-0"} tooltipText={"A language model used to generate responses."}/></div>
             <ComboBox data={MODELS} onChange={onModelSelected} value={configMode == "preset" ? props.config.model : customConfigOnEdit?.model}/>
         </div>
         <hr/>
         {
             configMode === 'custom' ? <div className={"flex flex-wrap items-center -m-2 pb-3"}>
                 <div className={"flex items-center m-2"}>
-                    <div className={"h3-style"}>Agent Alias</div>
+                    <div className={"h3-style flex items-center"}>Agent Alias <TooltipIndicator id={"tt-agent-alias"} className={"ml-0"} tooltipText={"An alias for the agent used ONLY in the prompt."}/></div>
                     <input className={"text-input w-[6rem] sm ml-2 bg-white"} placeholder={"Me"}
                            value={customConfigOnEdit?.system_alias}
                            onChange={onAgentAliasChange}
                     />
                 </div>
                 <div className={"flex items-center m-2"}>
-                    <div className={"h3-style"}>User Alias</div>
+                    <div className={"h3-style flex items-center"}>User Alias <TooltipIndicator id={"tt-user-alias"} className={"ml-0"} tooltipText={"An alias for the user used ONLY in the prompt."}/></div>
                     <input className={"text-input w-[6rem] sm ml-2 bg-white"} placeholder={"Customer"}
                            value={customConfigOnEdit?.user_alias}
                            onChange={onUserAliasChange}
@@ -261,7 +262,8 @@ const PresetConfigViewContent = (props: {
 
     }, [props.config, props.onConfigUpdate])
 
-    return <><h3>Topic</h3>
+    return <><h3 className={"flex items-center"}><span>Topic</span> <TooltipIndicator id={"tt-topic"} className={"ml-0"}
+                                         tooltipText={"The chatbot will carry on the conversation by asking questions regarding the given topic."}/></h3>
         <div className="flex flex-row justify-evenly -m-1">
             {
                 TOPICS.map(topic => <button key={topic.key}
@@ -272,18 +274,24 @@ const PresetConfigViewContent = (props: {
         </div>
 
         <div className="flex flex-row items-center py-3 mt-2">
-            <div className={"h3-style flex-1"}>Information Format</div>
+            <div className={"h3-style flex-1"}>
+                <span>Information Format</span>
+                <TooltipIndicator id={"tt-format"} tooltipText={"In the Structured format, questions to ask are structured in an NLP-friendly format. In the Descriptive format, questions to ask are described as plain sentences."}/>
+            </div>
             <div className={"button-group"}>
-                <button id={"btn-format-specific"} onClick={onSelectionButtonClick}
-                        className={`button-secondary ${props.config.type === "preset" && props.config.format === "specific" ? 'selected' : undefined}`}>Specific
+                <button id={"btn-format-structured"} onClick={onSelectionButtonClick}
+                        className={`button-secondary flex items-center ${props.config.type === "preset" && props.config.format === "structured" ? 'selected' : undefined}`}>Structured
                 </button>
                 <button id={"btn-format-descriptive"} onClick={onSelectionButtonClick}
-                        className={`button-secondary ${props.config.type === "preset" && props.config.format === "descriptive" ? 'selected' : undefined}`}>Descriptive
+                        className={`button-secondary flex items-center ${props.config.type === "preset" && props.config.format === "descriptive" ? 'selected' : undefined}`}>Descriptive
                 </button>
             </div>
         </div>
         <div className="flex flex-row items-center py-1">
-            <div className={"h3-style flex-1"}>Personality Modifier</div>
+            <div className={"h3-style flex-1"}>
+                <span>Personality Modifier</span>
+                <TooltipIndicator id={"tt-personality"} tooltipText={"With modifier, the instruction contains RICHER description of the agent's personality encouraging the EMPATHETIC behaviors."}/>
+            </div>
             <div className={"button-group"}>
                 <button id={"btn-modifier-true"} onClick={onSelectionButtonClick}
                         className={`button-secondary ${props.config.type === "preset" && props.config.modifier ? 'selected' : undefined}`}>With

@@ -65,6 +65,10 @@ code {
         @apply button-secondary text-xs font-normal bg-gray-100 border-none;
     }
 
+    .button-group{
+        @apply flex items-center;
+    }
+
     .button-group > .button-secondary {
         @apply rounded-none;
     }

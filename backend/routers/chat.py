@@ -17,9 +17,9 @@ class ClientWebSocketAction:
     TerminateSession = "terminate-session"
 
 def _get_gpt3_chatbot_config_path(session_config: dict):
-    if session_config["format"] == 'specific' and session_config["modifier"] is True:
+    if session_config["format"] == 'structured' and session_config["modifier"] is True:
         index = 1
-    elif session_config["format"] == 'specific' and session_config['modifier'] is False:
+    elif session_config["format"] == 'structured' and session_config['modifier'] is False:
         index = 2
     elif session_config["format"] == 'descriptive' and session_config['modifier'] is True:
         index = 3
