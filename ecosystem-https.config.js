@@ -3,6 +3,6 @@ module.exports = {
         name: 'llm-chat-web',
         script: 'main.py',
         interpreter: "python3",
-        args: '--production --https'
+        args: '--production --https --port=8888'
     }]
 };
