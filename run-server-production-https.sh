@@ -1,0 +1,1 @@
+(cd frontend && npm run build && cd ..) && (pm2 delete llm-chat-web ; pm2 start ecosystem-https.config.js)
