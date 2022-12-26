@@ -12,7 +12,7 @@ import { nanoid } from 'nanoid'
 
 
 const url = new URL(process.env.REACT_APP_API_URL!!)
-const WEBSOCKET_URL = "ws://" + url.hostname + ":" + url.port + "/api/v1/chat/ws"
+const WEBSOCKET_URL = (url.protocol.startsWith("http:") ? "ws://" : "wss://") + url.hostname + ":" + url.port + "/api/v1/chat/ws"
 
 export const ChatbotPlayground = () => {
 
