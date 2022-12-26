@@ -134,7 +134,7 @@ export const ConfigPanel = (props: {
                                                                  onConfigUpdate={props.onConfigUpdate}/> : undefined
         }
         <div className={"flex flex-row items-center justify-between my-2"}>
-            <div className={"h3-style mt-1.5 flex items-center"}><span>Model</span> <TooltipIndicator id={"tt-model-name"} className={"ml-0"} tooltipText={"A language model used to generate responses."}/></div>
+            <div className={"h3-style mt-1.5 flex items-center"}><span>Model</span> <TooltipIndicator id={"tt-model-name"} className={"ml-0"} tooltipText={"A language model used to generate responses. *Note that we used text-davinci-002 for our user study.*"}/></div>
             <ComboBox data={MODELS} onChange={onModelSelected} value={configMode == "preset" ? props.config.model : customConfigOnEdit?.model}/>
         </div>
         <hr/>

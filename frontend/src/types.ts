@@ -56,5 +56,5 @@ export const DEFAULT_PRESET_CONFIG: SessionPresetConfig = {
     topic: 'sleep',
     format: 'descriptive',
     modifier: true,
-    model: 'text-davinci-003'
+    model: 'text-davinci-002'
 }
