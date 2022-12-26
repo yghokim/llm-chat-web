@@ -48,7 +48,7 @@ class GPT3StaticPromptResponseGenerator(ResponseGenerator):
         if gpt3_model is not None:
             self.gpt3_model = gpt3_model
         else:
-            self.gpt3_model = "text-davinci-003"
+            self.gpt3_model = "text-davinci-002"
 
         self.max_tokens = 256
 
