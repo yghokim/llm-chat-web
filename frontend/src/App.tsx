@@ -4,6 +4,7 @@ import {ChatbotPlayground} from "./components/ChatbotPlayground";
 import {AboutSection} from "./sections/AboutSection";
 import {PublicationSection} from "./sections/PublicationSection";
 import {AckSection} from "./sections/AckSection";
+import {UserStudySection} from "./sections/UserStudySection";
 
 function App() {
     return (
@@ -16,6 +17,7 @@ function App() {
                 </header>
                 <ChatbotPlayground/>
                 <AboutSection/>
+                <UserStudySection/>
                 <PublicationSection/>
                 <AckSection/>
             </div>
