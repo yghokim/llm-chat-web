@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from starlette.websockets import WebSocket, WebSocketDisconnect
 
 from chatbot.chat_session_manager import chat_session_manager, ChatEvent
-from chatbot.chatbot import ChatSession
+from chatbot.chatbot import EventBasedChatSession
 from chatbot.generators.gpt3_generator import GPT3StaticPromptResponseGenerator
 
 
@@ -59,13 +59,13 @@ async def websocket_endpoint(websocket: WebSocket):
                     with open(template_path) as tf:
                         yml = yaml.load(tf, yaml.FullLoader)
                         await websocket.send_json({"event": ChatEvent.MountPromptTemplate, "data": yml["prompt-base"]}, "text")
-                    await chat_session_manager.init_session(websocket, ChatSession(client_data['session_id'],
-                        GPT3StaticPromptResponseGenerator.from_yml(template_path, session_config["model"])))
+                    await chat_session_manager.init_session(websocket, EventBasedChatSession(client_data['session_id'],
+                                                                                             GPT3StaticPromptResponseGenerator.from_yml(template_path, session_config["model"])))
                 elif session_config["type"] == "custom":
                     encoder = tiktoken.get_encoding("gpt2")
                     token_len = len(encoder.encode(session_config["prompt_body"]))
                     if token_len < 400:
-                        await chat_session_manager.init_session(websocket, ChatSession(
+                        await chat_session_manager.init_session(websocket, EventBasedChatSession(
                             client_data['session_id'],
                             GPT3StaticPromptResponseGenerator(prompt_base=session_config["prompt_body"],
                                                               user_prefix=f"{session_config['user_alias'].strip()}: "

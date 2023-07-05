@@ -2,7 +2,7 @@ from starlette.websockets import WebSocket
 
 import asyncio
 
-from chatbot.chatbot import ChatSession, DialogTurn
+from chatbot.chatbot import EventBasedChatSession, DialogTurn
 
 
 class ChatEvent:
@@ -17,7 +17,7 @@ class ChatSessionManager:
 
         self.session_id_websocket_map: dict[WebSocket, str] = {}
 
-        self.chat_sessions: dict[str, ChatSession] = {}
+        self.chat_sessions: dict[str, EventBasedChatSession] = {}
 
     @property
     def num_connections(self):
@@ -63,7 +63,7 @@ class ChatSessionManager:
             await session.on_is_processing.subscribe(
                 on_next=handle_is_processing)
 
-    async def init_session(self, websocket: WebSocket, session: ChatSession):
+    async def init_session(self, websocket: WebSocket, session: EventBasedChatSession):
 
         self.chat_sessions[session.id] = session
 
