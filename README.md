@@ -11,4 +11,21 @@ https://arxiv.org/abs/2301.05843
 Live demo at https://naver-ai.github.io/llm-chatbot/
 
 ## How to Run
-TBD.
+
+### (Prerequisite) Set OpenAI API Key
+Create a `.env` file in the root directory and set OPENAI_API_KEY variable:
+```sh
+OPENAI_API_KEY=PASTE_YOUR_API_KEY
+```
+
+### Running a web version
+
+#### Development mode:
+```sh
+> sh run-server-debug.sh
+```
+
+#### Production mode:
+```sh
+> sh run-server-production.sh
+```
